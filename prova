@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apertura Pacchetti di Carte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .pack-container {
+            display: inline-block;
+            text-align: center;
+            margin: 10px;
+        }
+        .pack {
+            width: 100px;
+            height: 150px;
+            text-align: center;
+            line-height: 150px;
+            font-weight: bold;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+                .common { background: url('https://i.ibb.co/SwPKcS4b/IMG-20241210-WA0189.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;}
+
+        .rare {
+            background: url('https://i.ibb.co/MDPtwHqT/IMG-20241210-WA0193.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+        }
+        .cards {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 150px;
+            background-color: white;
+            border: 1px solid black;
+            margin: 5px;
+            text-align: center;
+            line-height: 75px;
+            font-weight: bold;
+        }
+        .common-card { background-color: white; }
+        .rare-card { background-color: blue; color: white; }
+        .unique-card { background-color: gold; }
+        .alt-unique-card { background-color: red; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Apri i tuoi pacchetti di carte</h1>
+    <label for="numPacks">Seleziona il numero di pacchetti (1-50):</label>
+    <input type="number" id="numPacks" min="1" max="50" value="1">
+    <button onclick="openPacks()">Apri Pacchetti</button>
+    <div id="results"></div>
+
+    <script>
+        function openPacks() {
+            let numPacks = document.getElementById("numPacks").value;
+            let resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            for (let i = 0; i < numPacks; i++) {
+                let isRare = Math.random() < 0.02;
+                let packContainer = document.createElement("div");
+                packContainer.className = "pack-container";
+
+                let packDiv = document.createElement("div");
+                packDiv.className = "pack " + (isRare ? "rare" : "common");
+                packDiv.textContent = isRare ? "" : "Comune";
+                packDiv.onclick = function() { openPack(packContainer); };
+
+                packContainer.appendChild(packDiv);
+                resultsDiv.appendChild(packContainer);
+            }
+        }
+
+        function openPack(packContainer) {
+            let cardsDiv = document.createElement("div");
+            cardsDiv.className = "cards";
+
+            let probabilities = [
+                [1.0, 0.0, 0.0],  // Slot 1 - 100% comune
+                [1.0, 0.0, 0.0],  // Slot 2 - 100% comune
+                [1.0, 0.0, 0.0],  // Slot 3 - 100% comune,
+                [1.0, 0.0, 0.0],  // Slot 4 - 100% comune, 
+                [0.9, 0.1, 0.0],  // Slot 5 - 90% comune, 10% rara
+                [0.0, 0.99, 0.01],  // Slot 6 - 99% rara, 1% unica
+                [0.0, 0.975, 0.20, 0.005]  // Slot 7 - 97,5% rara, 2% unica, 0,5% unica alternativa
+            ];
+
+            let cardTypes = ["common-card", "rare-card", "unique-card", "alt-unique-card"];
+            let cardLabels = ["Comune", "Rara", "Unica", "Alternativa"];
+
+            for (let i = 0; i < 7; i++) {
+                let rand = Math.random();
+                let cumulative = 0;
+                let selectedType = 0;
+
+                for (let j = 0; j < probabilities[i].length; j++) {
+                    cumulative += probabilities[i][j];
+                    if (rand <= cumulative) {
+                        selectedType = j;
+                        break;
+                    }
+                }
+
+                let card = document.createElement("div");
+                card.className = "card " + cardTypes[selectedType];
+                card.textContent = cardLabels[selectedType];
+                cardsDiv.appendChild(card);
+            }
+
+            packContainer.appendChild(cardsDiv);
+        }
+    </script>
+</body>
+</html>
